@@ -5987,7 +5987,7 @@
                   // adding nodes and edges to the graph
                   data = {nodes: nodes, edges: edges};
 
-                  var options = {"configure": {"enabled": true, "filter": ["physics"], "container": "#mynetwork"}, "interaction": {"hover": true, "navigationButtons": true}, "physics": {"enabled": false,    "minVelocity": 0.75, "solver": "repulsion"}};
+                  var options = {"configure": {"enabled": true, "filter": ["physics"]}, "interaction": {"hover": true, "navigationButtons": true}, "physics": {"adaptiveTimestep": true, "enabled": false, "minVelocity": 0.75, "solver": "repulsion", "stabilization": {"iterations": 100}}, "layout": {"improvedLayout": false}, "groups": {"person": {"color": "#58A6FF"}, "place": {"color": "#8DFF58"}, "work": {"color": "#FF6F61"}, "instance": {"color": "#FFD700"}}};
 
                   
 
@@ -6016,6 +6016,9 @@
               }
               drawGraph();
               network.setOptions({ physics: true });
+              network.once("stabilizationIterationsDone", function() {
+              network.setOptions({ physics: false });});
+
         </script>
     </body>
 </html>
