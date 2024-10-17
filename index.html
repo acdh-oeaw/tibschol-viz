@@ -5987,7 +5987,7 @@
                   // adding nodes and edges to the graph
                   data = {nodes: nodes, edges: edges};
 
-                  var options = {"configure": {"enabled": true, "filter": ["physics"], "container": "#mynetwork"}, "interaction": {"hover": true, "navigationButtons": true}, "physics": {"enabled": false}};
+                  var options = {"configure": {"enabled": true, "filter": ["physics"], "container": "#mynetwork"}, "interaction": {"hover": true, "navigationButtons": true}, "physics": {"enabled": false,    "minVelocity": 0.75, "solver": "repulsion"}};
 
                   
 
@@ -6015,6 +6015,7 @@
 
               }
               drawGraph();
+              network.setOptions({ physics: true });
         </script>
     </body>
 </html>
