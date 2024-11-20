@@ -1,0 +1,29 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # Deploy only when pushing to the main branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout the code from the repository
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Install dependencies and build the project (if needed)
+    # Replace this with your actual build step if applicable
+    - name: Install and Build
+      run: |
+        npm install
+        npm run build  # This should generate the 'dist' folder
+      working-directory: ./cosmograph
+    # Deploy the contents of the 'dist' folder to the gh-pages branch
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./cosmograph/dist  # Adjusted path to the 'dist' folder
