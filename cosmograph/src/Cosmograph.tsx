@@ -35,6 +35,7 @@ function JobAdsViz() {
   const fitView = () => {
     (cosmograph.current as any)?.fitView();
   }
+
   const customOnSearch = (nodes?: N[]) =>{
     // reset searchview if nodes are empty
     if (!nodes) {
@@ -66,7 +67,9 @@ function JobAdsViz() {
     <button onClick={fitView}>Fit</button>
     </div>
     <Legend />
-    <CosmographSearch ref={searchRef} onSearch={customOnSearch} onSelectResult={customSelectResult}/>
+    <CosmographSearch ref={searchRef} onSearch={customOnSearch} onSelectResult={customSelectResult}
+    accessors={[{ label: 'label', accessor: (node) => node.label }]}
+    />
     <Cosmograph ref={cosmograph}  nodeColor={d => (d as any).color}
                 nodeLabelAccessor={d => (d as any).label}
                 renderLinks={true}
