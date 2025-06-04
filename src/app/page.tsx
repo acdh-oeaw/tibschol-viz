@@ -1,7 +1,7 @@
 export default function Home() {
     return (
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 className="text-4xl font-bold mb-4">Welcome!</h1>
+            <h1 className="text-4xl font-bold mb-4" style={{ color: 'var(--color-heading)' }}>Welcome!</h1>
 
             <p className="mb-6">
                 <a target="_blank" href="https://www.oeaw.ac.at/projects/tibschol/home"><strong>TibSchol</strong></a> explores the formative

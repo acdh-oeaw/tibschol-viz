@@ -2,7 +2,7 @@
 
 header {
   background-color: var(--color-background);
-  color: var(--color-foreground);
+  color: var(--color-heading);
   border-bottom: 1px solid var(--color-foreground);
   padding: 1rem 1.5rem;
 }
@@ -16,7 +16,7 @@ nav {
 }
 
 nav a {
-  color: var(--color-foreground);
+  color: var(--color-heading);
   text-decoration: none;
   cursor: pointer;
 }
@@ -50,7 +50,7 @@ nav a:hover {
 .group > div:last-child a {
   display: block;
   padding: 0.5rem 1rem;
-  color: var(--color-foreground);
+  color: var(--color-heading);
 }
 
 .group > div:last-child a:hover {
