@@ -6,10 +6,10 @@ A data exploration proof of concept [static website](https://acdh-oeaw.github.io
 
 - **Next.js** (App Router)
 - **React**
-- **Tailwind CSS** (custom theme)
+- **Tailwind CSS**
 - **TypeScript**
 - **PostCSS**
 - **Google Fonts**:
-  - [Noto Serif](https://fonts.google.com/specimen/Noto+Serif) for Latin
+  - [Noto Sans](https://fonts.google.com/specimen/Noto+Sans) for Latin
   - [Noto Serif Tibetan](https://fonts.google.com/noto/specimen/Noto+Serif+Tibetan) for Tibetan
 

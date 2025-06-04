@@ -1,7 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
+@import "tailwindcss";
 :root {
   --color-background: #002b36;
   --color-foreground: #839496;
@@ -17,5 +14,18 @@
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);
-  min-height: 100vh;
+  min-height: 100vh !important;
+}
+
+a {
+  color: #2aa198; /* Solarized Cyan */
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover,
+a:focus {
+  color: #67babc; /* lighter cyan for hover */
+  text-decoration: underline;
+  outline: none;
 }
