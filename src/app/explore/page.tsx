@@ -18,17 +18,29 @@ const labelColors: Record<string, string> = {
     instance: "cyan",
     place: "darkgreen",
 };
-function Legend() {
-    return (
-        <div className="absolute my-20 top-0 right-0 bg-gray shadow p-4 rounded text-sm space-y-2 z-10">
-            {Object.entries(labelColors).map(([label, color]) => (
-                <div key={label} className="flex items-center space-x-2">
-                    <span className="w-4 h-4 rounded-full" style={{ backgroundColor: color }} />
-                    <span>{label}</span>
-                </div>
-            ))}
+
+function Legend({
+    enabledTypes,
+    toggleType,
+}: {
+  enabledTypes: Record<string, boolean>,
+  toggleType: (type: string) => void
+}) {
+  return (
+    <div className="absolute my-20 top-0 right-0 bg-gray shadow p-4 rounded text-sm space-y-2 z-10">
+      {Object.entries(labelColors).map(([label, color]) => (
+        <div key={label} className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            checked={enabledTypes[label]}
+            onChange={() => toggleType(label)}
+          />
+          <span className="w-4 h-4 rounded-full" style={{ backgroundColor: color }} />
+          <span>{label}</span>
         </div>
-    );
+      ))}
+    </div>
+  );
 }
 
 function buildGraph(data: DataRow[]) {
@@ -88,6 +100,9 @@ export default function Explorer() {
     const [results, setResults] = useState<DataRow[]>([]);
     const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
     const [connectedDescriptions, setConnectedDescriptions] = useState<string[]>([]);
+    const [enabledTypes, setEnabledTypes] = useState<Record<string, boolean>>(
+    Object.keys(labelColors).reduce((acc, type) => ({ ...acc, [type]: true }), {})
+);
 
     const handleResults = (newResults: DataRow[]) => {
         setResults(newResults);
@@ -128,6 +143,25 @@ export default function Explorer() {
 
 
     const graph = useMemo(() => buildGraph(results.length > 0 ? results : data), [results]);
+    const graphNodeMap = useMemo(
+        () => Object.fromEntries(graph.nodes.map(n => [n.id, n])),
+        [graph.nodes]
+    );
+
+    const filteredGraph = useMemo(
+        () => ({
+            nodes: graph.nodes.filter(node => enabledTypes[node.type]),
+            links: graph.links.filter(
+                link =>
+                    enabledTypes[graphNodeMap[link.source].type] &&
+                    enabledTypes[graphNodeMap[link.target].type]
+            ),
+        }),
+        [graph.nodes, graph.links, graphNodeMap, enabledTypes]
+    );
+    const toggleType = (type: string) => {
+        setEnabledTypes(prev => ({ ...prev, [type]: !prev[type] }));
+    };
 
 
     return (
@@ -156,8 +190,8 @@ export default function Explorer() {
 
                 <Cosmograph
                     ref={cosmographRef}
-                    nodes={graph.nodes}
-                    links={graph.links}
+                    nodes={filteredGraph.nodes}
+                    links={filteredGraph.links}
                     linkArrows={false}
                     nodeColor={(d) => d.colour ?? "#cccccc"}
                     nodeLabelColor={(d) => d.colour ?? "#cccccc"}
@@ -218,7 +252,7 @@ export default function Explorer() {
                     </div>
 
                 </div>
-                <Legend />
+                <Legend enabledTypes={enabledTypes} toggleType={toggleType} />
             </div>
         </div >
     );
