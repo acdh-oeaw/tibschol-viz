@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import { Noto_Sans, Noto_Serif_Tibetan } from 'next/font/google'
+import { Noto_Sans } from 'next/font/google'
 
 import "./globals.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 
 const notoSerif = Noto_Sans({ subsets: ['latin'], weight: ['400', '700'] })
-const notoTibetan = Noto_Serif_Tibetan({ weight: ['400'], subsets: ['tibetan'] })
 export const metadata: Metadata = {
     title: 'TibSchol',
     description: 'The Dawn of Tibetan Buddhist Scholasticism (11th–13th century)',

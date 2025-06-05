@@ -11,5 +11,4 @@ A data exploration proof of concept [static website](https://acdh-oeaw.github.io
 - **PostCSS**
 - **Google Fonts**:
   - [Noto Sans](https://fonts.google.com/specimen/Noto+Sans) for Latin
-  - [Noto Serif Tibetan](https://fonts.google.com/noto/specimen/Noto+Serif+Tibetan) for Tibetan
 
