@@ -4,7 +4,7 @@
 import SearchBar from "../components/Search";
 import rawData from "../../data/relations.json";
 import { RawRow, DataRow, GraphNode } from "@/types/data";
-import { useState, useRef, useMemo } from 'react'
+import { useState, useRef, useMemo, useEffect } from 'react'
 import { Cosmograph } from '@cosmograph/react'
 
 const data: DataRow[] = (rawData as RawRow[]).map(row => ({
@@ -96,13 +96,22 @@ function buildGraph(data: DataRow[]) {
 export default function Explorer() {
     const cosmographRef = useRef(null)
     const graphRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+    graphRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, []);
 
     const [results, setResults] = useState<DataRow[]>([]);
     const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
     const [connectedDescriptions, setConnectedDescriptions] = useState<string[]>([]);
+
+    const selectedType = "work";
+
     const [enabledTypes, setEnabledTypes] = useState<Record<string, boolean>>(
-    Object.keys(labelColors).reduce((acc, type) => ({ ...acc, [type]: true }), {})
-);
+        () =>
+            Object.fromEntries(
+                Object.keys(labelColors).map(type => [type, type === selectedType])
+            )
+    );
 
     const handleResults = (newResults: DataRow[]) => {
         setResults(newResults);
@@ -162,7 +171,6 @@ export default function Explorer() {
     const toggleType = (type: string) => {
         setEnabledTypes(prev => ({ ...prev, [type]: !prev[type] }));
     };
-
 
     return (
         <div className="mt-2 relative left-1/2 right-1/2 -mx-[50vw] w-[99.5vw]" >
