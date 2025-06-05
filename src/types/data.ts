@@ -15,5 +15,5 @@ export interface GraphNode {
     label: string;
     type: string;
     colour: string;
-    size: number;
+    size?: number;
 }
