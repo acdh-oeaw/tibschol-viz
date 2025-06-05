@@ -8,6 +8,8 @@ export type DataRow = {
     source_label:string,
     target_type: string,
     target_label: string
+    direction?: boolean;
+
 };
 
 export interface GraphNode {
@@ -18,10 +20,4 @@ export interface GraphNode {
     size?: number;
 }
 
-export interface GraphLink{
-    source: string;
-    target: string;
-    direction: boolean;
-    forward?: string;
-    reverse?: string;
 }

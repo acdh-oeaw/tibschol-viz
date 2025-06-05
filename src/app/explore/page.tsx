@@ -3,8 +3,8 @@
 
 import SearchBar from "../components/Search";
 import rawData from "../../data/relations.json";
-import { DataRow, GraphLink, GraphNode } from "@/types/data";
-import { useState, useRef } from 'react'
+import { DataRow, GraphNode } from "@/types/data";
+import { useState, useRef, useMemo } from 'react'
 import { Cosmograph } from '@cosmograph/react'
 
 const data: DataRow[] = rawData as DataRow[];
@@ -29,7 +29,7 @@ function Legend() {
 
 function buildGraph(data: DataRow[]) {
     const nodes = new Map<string, GraphNode>();
-    const links: GraphLink[] = [];
+    const links: DataRow[] = [];
     const degree = new Map<string, number>();
 
     for (const row of data) {
@@ -53,8 +53,13 @@ function buildGraph(data: DataRow[]) {
             source: row.source,
             target: row.target,
             direction: false,
+            source_label: row.source_label,
+            source_type: row.source_type,
+            target_label: row.target_label,
+            target_type: row.target_type,
             forward: row.forward,
-            reverse: row.reverse  });
+            reverse: row.reverse
+        });
 
         // Count degrees
         degree.set(row.source, (degree.get(row.source) ?? 0) + 1);
@@ -77,10 +82,14 @@ export default function Explorer() {
     const graphRef = useRef<HTMLDivElement>(null);
 
     const [results, setResults] = useState<DataRow[]>([]);
+    const [selectedNode, setSelectedNode] = useState<GraphNode>(null);
+    const [connectedDescriptions, setConnectedDescriptions] = useState<string[]>([]);
 
     const handleResults = (newResults: DataRow[]) => {
         setResults(newResults);
         graphRef.current?.scrollIntoView({ behavior: 'smooth' });
+        setSelectedNode(null);
+        setConnectedDescriptions([]);
     };
     const playPause = () => {
         if ((cosmographRef.current as any)?.isSimulationRunning) {
@@ -92,9 +101,32 @@ export default function Explorer() {
     const fitView = () => {
         (cosmographRef.current as any)?.fitView();
     }
+    const resetView = () => {
+        handleResults([]);
+    }
+
+    const handleNodeClick = (node: GraphNode) => {
+        setSelectedNode(node);
+        const connected = graph.links
+            .filter(link => link.source === node.id || link.target === node.id)
+
+        const relations_list = connected.map(link => {
+                if (link.source === node.id) {
+                    return `${link.forward} <strong>${link.target_label}</strong>`;
+                } else {
+                    return `${link.reverse} <strong>${link.source_label}</strong>`;
+                }
+        }).sort((a, b) => a.localeCompare(b));
+
+        setConnectedDescriptions(relations_list);
+
+    };
 
 
-    const graph = buildGraph(results.length > 0 ? results : data);
+    const graph = useMemo(
+    () => buildGraph(results.length > 0 ? results : data),
+    [results, data]
+);
 
     return (
         <div className="mt-2 relative left-1/2 right-1/2 -mx-[50vw] w-[99.5vw]" >
@@ -139,8 +171,16 @@ export default function Explorer() {
                     simulationLinkDistance={10}
                     simulationFriction={0.85}
                     backgroundColor="#002b36"
+                    onLabelClick={handleNodeClick}
+
                 />
-                <div className="absolute mx-5 my-20  top-5 left-0 flex space-x-2 z-10">
+                <div className="absolute mx-5 my-20  top-5 left-0 flex space-x-2 z-10 ">
+                    <button
+                        onClick={resetView}
+                        className="px-4 py-1 bg-white border border-gray-300 text-gray-800 rounded bg-yellow-500 hover:bg-yellow-300"
+                    >
+                        Reset
+                    </button>
                     <button
                         onClick={playPause}
                         className="px-4 py-1 bg-white border border-gray-300 text-gray-800 rounded hover:bg-gray-100"
@@ -153,6 +193,23 @@ export default function Explorer() {
                     >
                         Fit
                     </button>
+
+                    <div className="absolute left-0 top-full mt-1 w-64 text-white p-3 rounded shadow-lg text-xs">
+                        {selectedNode ? (
+                            <div>
+                                <h2 className="text-lg font-bold mb-2">{selectedNode.label}</h2>
+                                <p><strong>ID:</strong>{selectedNode.id} ({selectedNode.type})</p>
+                                <ul className="list-disc pl-5">
+                                    {connectedDescriptions.map((desc, index) => (
+                                        <li key={index} dangerouslySetInnerHTML={{ __html: desc }} />
+                                    ))}
+                                </ul>
+                            </div>
+                        ) : (
+                            <p>Select a node to see details</p>
+                        )}
+                    </div>
+
                 </div>
                 <Legend />
             </div>
