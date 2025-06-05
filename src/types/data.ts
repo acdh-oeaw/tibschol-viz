@@ -17,3 +17,11 @@ export interface GraphNode {
     colour: string;
     size?: number;
 }
+
+export interface GraphLink{
+    source: string;
+    target: string;
+    direction: boolean;
+    forward?: string;
+    reverse?: string;
+}

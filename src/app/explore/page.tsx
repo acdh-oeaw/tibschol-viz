@@ -3,7 +3,7 @@
 
 import SearchBar from "../components/Search";
 import rawData from "../../data/relations.json";
-import { DataRow, GraphNode } from "@/types/data";
+import { DataRow, GraphLink, GraphNode } from "@/types/data";
 import { useState, useRef } from 'react'
 import { Cosmograph } from '@cosmograph/react'
 
@@ -29,7 +29,7 @@ function Legend() {
 
 function buildGraph(data: DataRow[]) {
     const nodes = new Map<string, GraphNode>();
-    const links: { source: string; target: string; direction: boolean }[] = [];
+    const links: GraphLink[] = [];
     const degree = new Map<string, number>();
 
     for (const row of data) {
@@ -49,7 +49,12 @@ function buildGraph(data: DataRow[]) {
             colour: target_colour,
         });
 
-        links.push({ source: row.source, target: row.target, direction: false });
+        links.push({
+            source: row.source,
+            target: row.target,
+            direction: false,
+            forward: row.forward,
+            reverse: row.reverse  });
 
         // Count degrees
         degree.set(row.source, (degree.get(row.source) ?? 0) + 1);
