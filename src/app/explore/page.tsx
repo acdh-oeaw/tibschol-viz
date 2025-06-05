@@ -112,10 +112,10 @@ export default function Explorer() {
     const handleNodeClick = (node: GraphNode) => {
         setSelectedNode(node);
         const connected = data
-            .filter(link => link.source === node.id || link.target === node.id)
+            .filter(link => link.source === node?.id || link.target === node?.id)
 
         const relations_list = connected.map(link => {
-                if (link.source === node.id) {
+                if (link.source === node?.id) {
                     return `${link.forward} <strong>${link.target_label}</strong>`;
                 } else {
                     return `${link.reverse} <strong>${link.source_label}</strong>`;

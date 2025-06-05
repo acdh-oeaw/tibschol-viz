@@ -9,7 +9,13 @@ export type DataRow = {
     target_type: string,
     target_label: string
     direction?: boolean;
-
+    start_date_from?: string | Date;
+    start_date_to?: string | Date;
+    start_date_sort?: string | Date;
+    end_date_from?: string | Date;
+    end_date_to?: string | Date;
+    end_date_sort?: string | Date;
+    topics?: string[];
 };
 
 export interface GraphNode {
@@ -30,4 +36,11 @@ export type RawRow = {
   target_type: string,
   target_label: string
   direction?: boolean;
+  start_date_from?: string | Date;
+  start_date_to?: string | Date;
+  start_date_sort?: string | Date;
+  end_date_from?: string | Date;
+  end_date_to?: string | Date;
+  end_date_sort?: string | Date;
+  topics?: string[];
 };
