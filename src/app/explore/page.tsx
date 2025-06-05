@@ -3,11 +3,15 @@
 
 import SearchBar from "../components/Search";
 import rawData from "../../data/relations.json";
-import { DataRow, GraphNode } from "@/types/data";
+import { RawRow, DataRow, GraphNode } from "@/types/data";
 import { useState, useRef, useMemo } from 'react'
 import { Cosmograph } from '@cosmograph/react'
 
-const data: DataRow[] = rawData as DataRow[];
+const data: DataRow[] = (rawData as RawRow[]).map(row => ({
+    ...row,
+    source: String(row.source),
+    target: String(row.target),
+}));
 const labelColors: Record<string, string> = {
     person: "brown",
     work: "#3366CC",

@@ -1,14 +1,18 @@
 "use client";
 import { useState } from "react";
-import { DataRow } from "@/types/data";
+import { DataRow,RawRow } from "@/types/data";
 import SearchBar from "../components/Search";
 import rawData from "../../data/relations.json";
 import { useEffect, useRef } from 'react';
 
-const data: DataRow[] = rawData as DataRow[];
+const data: DataRow[] = (rawData as RawRow[]).map(row => ({
+    ...row,
+    source: String(row.source),
+    target: String(row.target),
+}));
 
 interface WordTreeChart {
-  draw: (data: google.visualization.DataTable, options: object) => void;
+    draw: (data: google.visualization.DataTable, options: object) => void;
 }
 
 
