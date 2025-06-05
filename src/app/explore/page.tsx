@@ -94,7 +94,7 @@ export default function Explorer() {
             < SearchBar data={data} onResults={handleResults} />
             {results.length > 0 && (
                 <p className="flex max-w-4xl mx-auto gap-2 font-semibold">
-                    Found {results.length} matches{" "}.
+                    Found {results.length} matches.
                     <button
                         onClick={() => {
                             const csvContent = results.map(row => Object.values(row).join(",")).join("\n");
