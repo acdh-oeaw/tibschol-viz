@@ -18,6 +18,4 @@ export interface GraphNode {
     type: string;
     colour: string;
     size?: number;
-}
-
-}
+};

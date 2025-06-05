@@ -82,7 +82,7 @@ export default function Explorer() {
     const graphRef = useRef<HTMLDivElement>(null);
 
     const [results, setResults] = useState<DataRow[]>([]);
-    const [selectedNode, setSelectedNode] = useState<GraphNode>(null);
+    const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
     const [connectedDescriptions, setConnectedDescriptions] = useState<string[]>([]);
 
     const handleResults = (newResults: DataRow[]) => {
@@ -107,7 +107,7 @@ export default function Explorer() {
 
     const handleNodeClick = (node: GraphNode) => {
         setSelectedNode(node);
-        const connected = graph.links
+        const connected = data
             .filter(link => link.source === node.id || link.target === node.id)
 
         const relations_list = connected.map(link => {
@@ -123,10 +123,8 @@ export default function Explorer() {
     };
 
 
-    const graph = useMemo(
-    () => buildGraph(results.length > 0 ? results : data),
-    [results, data]
-);
+    const graph = useMemo(() => buildGraph(results.length > 0 ? results : data), [results]);
+
 
     return (
         <div className="mt-2 relative left-1/2 right-1/2 -mx-[50vw] w-[99.5vw]" >
@@ -171,7 +169,12 @@ export default function Explorer() {
                     simulationLinkDistance={10}
                     simulationFriction={0.85}
                     backgroundColor="#002b36"
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
                     onLabelClick={handleNodeClick}
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
+                    onClick={handleNodeClick}
 
                 />
                 <div className="absolute mx-5 my-20  top-5 left-0 flex space-x-2 z-10 ">
