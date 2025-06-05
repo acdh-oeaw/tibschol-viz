@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     title: 'TibSchol',
     description: 'The Dawn of Tibetan Buddhist Scholasticism (11th–13th century)',
     icons: {
-        icon: '/favicon.svg',
+        icon: '/tibschol-viz/favicon.svg',
     }
 }
 
