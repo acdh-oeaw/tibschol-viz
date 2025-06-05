@@ -12,9 +12,7 @@ export default function Header() {
                 <div className="group">
                     <div>Visualisations</div>
                     <div>
-                        <Link href="/explore">Topics</Link>
-                        <Link href="/explore">Timeline</Link>
-
+                        <Link href="/relations">Relations</Link>
                     </div>
                 </div>
             </nav>
