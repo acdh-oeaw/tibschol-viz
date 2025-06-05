@@ -122,7 +122,7 @@ export default function Explorer() {
                 className="w-full"
                 scaleNodesOnZoom={false}
                 focusedNodeRingColor={'yellow'}
-                nodeSize={(d: GraphNode) => d.size}
+                nodeSize={(d: GraphNode) => d.size ?? 5}
                 simulationGravity={0.25}
                 simulationRepulsion={1}
                 simulationRepulsionTheta={1.15}
