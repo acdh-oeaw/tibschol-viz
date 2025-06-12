@@ -17,24 +17,26 @@ const works:WorkRow[] = (rawWorks as RawWorkRow[]).map(row => ({...row, pk: Stri
 const topicLinks = works
   .filter(work => Array.isArray(work.topics) && work.topics.length > 0)
   .flatMap(work =>
-    work.topics.map(topic => ({
-        source_type: "work",
-        source: work.pk,
-        source_label: work.name,
-        target_type: "topic",
-        target: topic,
-        target_label: topic,
-        forward: "is about",
-        reverse: "is discussed in",
-        confidence: "Positive",
-        start_date_from: null,
-        start_date_to: null,
-        start_date_sort: null,
-        end_date_to: null,
-        end_date_from: null,
-        end_date_sort: null,
-        topics: []
-    }))
+    work.topics
+      .filter(topic => topic.trim() !== "") // exclude empty or whitespace-only
+      .map(topic => ({
+          source_type: "work",
+          source: work.pk,
+          source_label: work.name,
+          target_type: "topic",
+          target: topic,
+          target_label: topic,
+          forward: "is about",
+          reverse: "is discussed in",
+          confidence: "Positive",
+          start_date_from: null,
+          start_date_to: null,
+          start_date_sort: null,
+          end_date_to: null,
+          end_date_from: null,
+          end_date_sort: null,
+          topics: []
+      }))
   );
 const data = [...relations, ...topicLinks];
 
