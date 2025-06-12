@@ -9,12 +9,12 @@ export type DataRow = {
     target_type: string,
     target_label: string
     direction?: boolean;
-    start_date_from?: string | Date;
-    start_date_to?: string | Date;
-    start_date_sort?: string | Date;
-    end_date_from?: string | Date;
-    end_date_to?: string | Date;
-    end_date_sort?: string | Date;
+    start_date_from?: string | Date| null;
+    start_date_to?: string | Date| null;
+    start_date_sort?: string | Date| null;
+    end_date_from?: string | Date| null;
+    end_date_to?: string | Date| null;
+    end_date_sort?: string | Date| null;
     topics?: string[];
 };
 
@@ -36,11 +36,37 @@ export type RawRow = {
   target_type: string,
   target_label: string
   direction?: boolean;
-  start_date_from?: string | Date;
-  start_date_to?: string | Date;
-  start_date_sort?: string | Date;
-  end_date_from?: string | Date;
-  end_date_to?: string | Date;
-  end_date_sort?: string | Date;
+  start_date_from?: string | Date| null;
+  start_date_to?: string | Date| null;
+  start_date_sort?: string | Date| null;
+  end_date_from?: string | Date| null;
+  end_date_to?: string | Date| null;
+  end_date_sort?: string | Date| null;
   topics?: string[];
 };
+
+export type WorkRow = {
+  name: string;
+  pk: string;
+  alternative_names: string;
+  external_links: string;
+  comments: string;
+  review: boolean;
+  notes: string;
+  author: string;
+  date_of_composition: string| null;
+  topics: string[];
+}
+
+export type RawWorkRow = {
+  name: string;
+  pk: string| number;
+  alternative_names: string;
+  external_links: string;
+  comments: string;
+  review: boolean;
+  notes: string;
+  author: string;
+  date_of_composition: string| null;
+  topics: string[];
+}
