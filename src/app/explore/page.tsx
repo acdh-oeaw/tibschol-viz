@@ -3,20 +3,48 @@
 
 import SearchBar from "../components/Search";
 import rawData from "../../data/relations.json";
-import { RawRow, DataRow, GraphNode } from "@/types/data";
+import rawWorks from "../../data/works.json";
+import { RawRow, DataRow, WorkRow, GraphNode } from "@/types/data";
 import { useState, useRef, useMemo, useEffect } from 'react'
 import { Cosmograph } from '@cosmograph/react'
 
-const data: DataRow[] = (rawData as RawRow[]).map(row => ({
+const relations: DataRow[] = (rawData as RawRow[]).map(row => ({
     ...row,
     source: String(row.source),
     target: String(row.target),
 }));
+const works:WorkRow[] = (rawWorks as WorkRow[]).map(row => ({...row, pk: String(row.pk)}));
+const topicLinks = works
+  .filter(work => Array.isArray(work.topics) && work.topics.length > 0)
+  .flatMap(work =>
+    work.topics.map(topic => ({
+        source_type: "work",
+        source: work.pk,
+        source_label: work.name,
+        target_type: "topic",
+        target: topic,
+        target_label: topic,
+        forward: "is about",
+        reverse: "is discussed in",
+        confidence: "Positive",
+        start_date_from: null,
+        start_date_to: null,
+        start_date_sort: null,
+        end_date_to: null,
+        end_date_from: null,
+        end_date_sort: null,
+        topics: []
+    }))
+  );
+const data = [...relations, ...topicLinks];
+
+
 const labelColors: Record<string, string> = {
     person: "brown",
     work: "#3366CC",
     instance: "cyan",
     place: "darkgreen",
+    topic: "goldenrod",
 };
 
 function Legend({

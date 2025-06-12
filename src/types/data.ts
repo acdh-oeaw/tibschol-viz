@@ -44,3 +44,16 @@ export type RawRow = {
   end_date_sort?: string | Date;
   topics?: string[];
 };
+
+export type WorkRow = {
+  name: string;
+  pk: number|string;
+  alternative_names: string;
+  external_links: string;
+  comments: string;
+  review: boolean;
+  notes: string;
+  author: string;
+  date_of_composition: string;
+  topics: string[];
+}
