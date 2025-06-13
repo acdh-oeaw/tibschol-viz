@@ -5,8 +5,9 @@ import SearchBar from "../components/Search";
 import rawData from "../../data/relations.json";
 import rawWorks from "../../data/works.json";
 import { RawRow, DataRow, RawWorkRow, WorkRow, GraphNode } from "@/types/data";
-import { useState, useRef, useMemo, useEffect } from 'react'
-import { Cosmograph } from '@cosmograph/react'
+import { useState, useRef, useMemo, useEffect } from 'react';
+import { Cosmograph, CosmographProvider } from '@cosmograph/react'
+
 
 const relations: DataRow[] = (rawData as RawRow[]).map(row => ({
     ...row,
@@ -158,6 +159,7 @@ export default function Explorer() {
     }
     const fitView = () => {
         (cosmographRef.current as any)?.fitView();
+        graphRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
     const resetView = () => {
         handleResults([]);
@@ -225,72 +227,73 @@ export default function Explorer() {
                 </p>
             )}
             <div ref={graphRef}>
+                <CosmographProvider>
+                    <Cosmograph
+                        ref={cosmographRef}
+                        nodes={filteredGraph.nodes}
+                        links={filteredGraph.links}
+                        linkArrows={false}
+                        nodeColor={(d) => d.colour ?? "#cccccc"}
+                        nodeLabelColor={(d) => d.colour ?? "#cccccc"}
+                        nodeLabelAccessor={(d: GraphNode) => d.label}
+                        linkWidth={2}
+                        className="w-full"
+                        scaleNodesOnZoom={false}
+                        focusedNodeRingColor={'yellow'}
+                        nodeSize={(d: GraphNode) => d.size ?? 5}
+                        simulationGravity={0.25}
+                        simulationRepulsion={1}
+                        simulationRepulsionTheta={1.15}
+                        simulationLinkDistance={10}
+                        simulationFriction={0.85}
+                        backgroundColor="#002b36"
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-ignore
+                        onLabelClick={handleNodeClick}
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-ignore
+                        onClick={handleNodeClick}
 
-                <Cosmograph
-                    ref={cosmographRef}
-                    nodes={filteredGraph.nodes}
-                    links={filteredGraph.links}
-                    linkArrows={false}
-                    nodeColor={(d) => d.colour ?? "#cccccc"}
-                    nodeLabelColor={(d) => d.colour ?? "#cccccc"}
-                    nodeLabelAccessor={(d: GraphNode) => d.label}
-                    linkWidth={2}
-                    className="w-full"
-                    scaleNodesOnZoom={false}
-                    focusedNodeRingColor={'yellow'}
-                    nodeSize={(d: GraphNode) => d.size ?? 5}
-                    simulationGravity={0.25}
-                    simulationRepulsion={1}
-                    simulationRepulsionTheta={1.15}
-                    simulationLinkDistance={10}
-                    simulationFriction={0.85}
-                    backgroundColor="#002b36"
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-ignore
-                    onLabelClick={handleNodeClick}
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-ignore
-                    onClick={handleNodeClick}
+                    />
+                    <div className="absolute mx-5 my-20  top-5 left-0 flex space-x-2 z-10 ">
+                        <button
+                            onClick={resetView}
+                            className="px-4 py-1 bg-white border border-gray-300 text-gray-800 rounded bg-yellow-500 hover:bg-yellow-300"
+                        >
+                            Reset
+                        </button>
+                        <button
+                            onClick={playPause}
+                            className="px-4 py-1 bg-white border border-gray-300 text-gray-800 rounded hover:bg-gray-100"
+                        >
+                            Pause/Play
+                        </button>
+                        <button
+                            onClick={fitView}
+                            className="px-4 py-1 bg-white border border-gray-300 text-gray-800 rounded hover:bg-gray-100"
+                        >
+                            Fit
+                        </button>
 
-                />
-                <div className="absolute mx-5 my-20  top-5 left-0 flex space-x-2 z-10 ">
-                    <button
-                        onClick={resetView}
-                        className="px-4 py-1 bg-white border border-gray-300 text-gray-800 rounded bg-yellow-500 hover:bg-yellow-300"
-                    >
-                        Reset
-                    </button>
-                    <button
-                        onClick={playPause}
-                        className="px-4 py-1 bg-white border border-gray-300 text-gray-800 rounded hover:bg-gray-100"
-                    >
-                        Pause/Play
-                    </button>
-                    <button
-                        onClick={fitView}
-                        className="px-4 py-1 bg-white border border-gray-300 text-gray-800 rounded hover:bg-gray-100"
-                    >
-                        Fit
-                    </button>
+                        <div className="absolute left-0 top-full mt-1 w-64 text-white p-3 rounded shadow-lg text-xs">
+                            {selectedNode ? (
+                                <div>
+                                    <h2 className="text-lg font-bold mb-2">{selectedNode.label}</h2>
+                                    <p><strong>ID:</strong>{selectedNode.id} ({selectedNode.type})</p>
+                                    <ul className="list-disc pl-5">
+                                        {connectedDescriptions.map((desc, index) => (
+                                            <li key={index} dangerouslySetInnerHTML={{ __html: desc }} />
+                                        ))}
+                                    </ul>
+                                </div>
+                            ) : (
+                                <p>Select a node to see details</p>
+                            )}
+                        </div>
 
-                    <div className="absolute left-0 top-full mt-1 w-64 text-white p-3 rounded shadow-lg text-xs">
-                        {selectedNode ? (
-                            <div>
-                                <h2 className="text-lg font-bold mb-2">{selectedNode.label}</h2>
-                                <p><strong>ID:</strong>{selectedNode.id} ({selectedNode.type})</p>
-                                <ul className="list-disc pl-5">
-                                    {connectedDescriptions.map((desc, index) => (
-                                        <li key={index} dangerouslySetInnerHTML={{ __html: desc }} />
-                                    ))}
-                                </ul>
-                            </div>
-                        ) : (
-                            <p>Select a node to see details</p>
-                        )}
                     </div>
-
-                </div>
-                <Legend enabledTypes={enabledTypes} toggleType={toggleType} />
+                    <Legend enabledTypes={enabledTypes} toggleType={toggleType} />
+                </CosmographProvider>
             </div>
         </div >
     );
