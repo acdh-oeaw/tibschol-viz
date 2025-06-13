@@ -42,7 +42,7 @@ const data = [...relations, ...topicLinks];
 
 
 const labelColors: Record<string, string> = {
-    person: "brown",
+    person: "#E34234",
     work: "#3366CC",
     instance: "cyan",
     place: "darkgreen",
