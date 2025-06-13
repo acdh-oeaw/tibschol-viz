@@ -32,7 +32,7 @@ export default function Search({ data, onResults }: SearchBarProps) {
         });
 
         // Deduplicate strings
-        const uniqueMatches = Array.from(new Set(matches)).slice(0, 10);
+        const uniqueMatches = Array.from(new Set(matches)).slice(0, 20);
 
         // Convert back to DataRow-like objects with only forward property (or just strings)
         // For simplicity, use strings as suggestions here:
