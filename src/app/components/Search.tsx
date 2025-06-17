@@ -18,9 +18,11 @@ export default function Search({ data, onResults }: SearchBarProps) {
             setSuggestions([]);
             return;
         }
-        const lowerQuery = query.toLowerCase();
 
-        // Collect all matching strings from all fields
+        const lowerQuery = query.toLowerCase();
+        const tokens = lowerQuery.split(/\s+/);
+        const lastToken = tokens[tokens.length - 1];
+
         const matches = data.flatMap(item => {
             const fields = [
                 item.forward,
@@ -28,44 +30,79 @@ export default function Search({ data, onResults }: SearchBarProps) {
                 item.source_label ?? "",
                 item.target_label ?? "",
             ];
-            return fields.filter(f => f.toLowerCase().includes(lowerQuery));
+            return fields.filter(f =>
+                f.toLowerCase().includes(lastToken)
+            );
         });
 
-        // Deduplicate strings
         const uniqueMatches = Array.from(new Set(matches)).slice(0, 20);
-
-        // Convert back to DataRow-like objects with only forward property (or just strings)
-        // For simplicity, use strings as suggestions here:
         setSuggestions(uniqueMatches);
     }, [query, data]);
 
     const handleSelect = (value: string) => {
-        setQuery(value);
+        const tokens = query.trim().split(/\s+/);
+        tokens[tokens.length - 1] = value;
+        setQuery(tokens.join(" ") + " ");
         setShowSuggestions(false);
     };
 
-    const handleSearch = () => {
-        const trimmed = query.trim();
-        if (trimmed.length === 0) {
-            onResults([], query);
-            return;
+const handleSearch = () => {
+    const normalize = (str: string) =>
+        str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+    const tokens = query.trim().split(/\s+/);
+    if (tokens.length === 0) {
+        onResults([], query);
+        return;
+    }
+
+    // Parse phrases and operators
+    const phrases: string[] = [];
+    const operators: string[] = [];
+    let currentPhrase: string[] = [];
+
+    for (const token of tokens) {
+        const upper = token.toUpperCase();
+        if (["AND", "OR", "NOT"].includes(upper)) {
+            if (currentPhrase.length > 0) {
+                phrases.push(currentPhrase.join(" "));
+                currentPhrase = [];
+            }
+            operators.push(upper);
+        } else {
+            currentPhrase.push(token);
+        }
+    }
+    if (currentPhrase.length > 0) {
+        phrases.push(currentPhrase.join(" "));
+    }
+
+    // Now apply logic to each row
+    const results = data.filter(row => {
+        const text = normalize(Object.values(row).join(" "));
+
+        let result = operators[0] === "NOT" ? true : false;
+
+        for (let i = 0; i < phrases.length; i++) {
+            const phrase = normalize(phrases[i]);
+            const op = operators[i - 1] || "OR"; // default to OR
+            const contains = text.includes(phrase);
+
+            if (op === "OR") {
+                result = result || contains;
+            } else if (op === "AND") {
+                result = result && contains;
+            } else if (op === "NOT") {
+                result = result && !contains;
+            }
         }
 
-        const normalize = (str: string): string =>
-            str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        return result;
+    });
 
-        const normalizedQuery = normalize(trimmed);
-
-        const searchResults = data.filter(row =>
-            Object.values(row).some(value =>
-                normalize(String(value)).includes(normalizedQuery)
-            )
-        );
-
-        onResults(searchResults, query);
-        setShowSuggestions(false);
-
-    };
+    onResults(results, query);
+    setShowSuggestions(false);
+};
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
