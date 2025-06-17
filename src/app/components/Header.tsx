@@ -9,12 +9,6 @@ export default function Header() {
                 <Link href="/">Home</Link>
                 <Link href="/explore">Explore</Link>
 
-                <div className="group">
-                    <div>Visualisations</div>
-                    <div>
-                        <Link href="/relations">Relations</Link>
-                    </div>
-                </div>
             </nav>
         </header>
     );
