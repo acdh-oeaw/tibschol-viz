@@ -15,7 +15,7 @@ const relations: DataRow[] = (rawData as RawRow[]).map(row => ({
     target: String(row.target),
 }));
 const works:WorkRow[] = (rawWorks as RawWorkRow[]).map(row => ({...row, pk: String(row.pk)}));
-const topicLinks = works
+const workTopicLinks = works
   .filter(work => Array.isArray(work.topics) && work.topics.length > 0)
   .flatMap(work =>
     work.topics
@@ -39,7 +39,34 @@ const topicLinks = works
           topics: []
       }))
   );
-const data = [...relations, ...topicLinks];
+const relTopicLinks = relations.flatMap(row =>
+  row.topics && row.topics.length
+    ? [
+        row,
+        ...row.topics.flatMap(topic => [
+          {
+            ...row,
+            target_type: "topic",
+            target_label: topic,
+            target: topic,
+            topics: []
+          },
+          {
+              ...row,
+              source_type: row.target_type,
+              source_label: row.target_label,
+              source: row.target,
+              target: topic,
+              target_type: "topic",
+              target_label: topic,
+              topics: []
+            }
+        ])
+        ]
+        : [row]
+);
+
+const data = [...relations, ...workTopicLinks, ...relTopicLinks];
 
 
 const labelColors: Record<string, string> = {
@@ -170,18 +197,29 @@ export default function Explorer() {
         const connected = data
             .filter(link => link.source === node?.id || link.target === node?.id)
 
-        const relations_list = connected.map(link => {
-                if (link.source === node?.id) {
-                    return `${link.forward} <strong>${link.target_label}</strong>`;
-                } else {
-                    return `${link.reverse} <strong>${link.source_label}</strong>`;
-                }
-        }).sort((a, b) => a.localeCompare(b));
-
+        const relations_list = Array.from(
+            new Set(
+                connected
+                    .map(link => {
+                        let output;
+                        if (link.target_type === "topic") return "";
+                        if (link.source === node?.id) {
+                            output = `${link.forward} <strong>${link.target_label}</strong>`;
+                        } else {
+                            output = `${link.reverse} <strong>${link.source_label}</strong>`;
+                        }
+                        if (link.topics?.length) {
+                            output += ` (${link.topics.join(', ')})`;
+                        }
+                        return output;
+                    })
+                    .filter(item => item != "")
+            )
+        ).sort((a, b) => a.localeCompare(b));
+        console.log(relations_list);
         setConnectedDescriptions(relations_list);
 
-    };
-
+    }
 
     const graph = useMemo(() => buildGraph(results.length > 0 ? results : data), [results]);
     const graphNodeMap = useMemo(
