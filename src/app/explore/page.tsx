@@ -154,8 +154,15 @@ function buildGraph(data: DataRow[]) {
 export default function Explorer() {
     const cosmographRef = useRef(null)
     const graphRef = useRef<HTMLDivElement>(null);
+    const [isHydrated, setIsHydrated] = useState(false);
+    const [webglAvailable, setWebglAvailable] = useState<boolean>(true);
+
     useEffect(() => {
-    graphRef.current?.scrollIntoView({ behavior: 'smooth' });
+        const canvas = document.createElement("canvas");
+        const gl = canvas.getContext("webgl2") || canvas.getContext("webgl");
+        setWebglAvailable(Boolean(gl));
+        setIsHydrated(true);
+        graphRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, []);
 
     const [results, setResults] = useState<DataRow[]>([]);
@@ -241,6 +248,24 @@ export default function Explorer() {
     const toggleType = (type: string) => {
         setEnabledTypes(prev => ({ ...prev, [type]: !prev[type] }));
     };
+
+    if (!isHydrated) {
+        return <div className="mt-2 relative left-1/2 right-1/2 -mx-[50vw] w-[99.5vw]" />;
+    }
+
+    if (!webglAvailable) {
+        return (
+            <div className="mt-2 max-w-4xl mx-auto p-6 bg-yellow-50 text-yellow-900 border border-yellow-200 rounded">
+                <h2 className="text-lg font-bold mb-2">WebGL Not Available</h2>
+                <p>Your browser doesn't support WebGL, which is required for the graph visualization. Please:</p>
+                <ul className="list-disc pl-5 mt-2 space-y-1">
+                    <li>Enable hardware acceleration in your browser settings</li>
+                    <li>Update your GPU drivers</li>
+                    <li>Try a different browser</li>
+                </ul>
+            </div>
+        );
+    }
 
     return (
         <div className="mt-2 relative left-1/2 right-1/2 -mx-[50vw] w-[99.5vw]" >
